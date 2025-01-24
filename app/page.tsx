@@ -67,7 +67,7 @@ export default function Home() {
         <div className="min-h-screen bg-gray-50 flex flex-col">
           {/* Top Navigation */}
           <nav className="flex justify-between items-center px-8 py-4 bg-white border-b border-gray-200">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 <EqualIcon className="w-4 h-4" />
               <span className="font-inter font-semibold text-black">Midpilot</span>
             </div>
@@ -149,24 +149,24 @@ export default function Home() {
                   <button
                     onClick={() =>
                       startChat(
-                        "Summarize latest paper on autonomous ships on Google Scholar"
+                        "Summarize latest paper on autonomous shipping on Arxiv"
                       )
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    Summarize latest paper on autonomous ships on Google Scholar
+                    Summarize latest paper on autonomous ships on Arxiv
                   </button>
                 </div>
               </div>
             </div>
-            <p className="text-base font-ppsupply text-center mt-8">
+            <p className="font-semibold font-inter text-center mt-8">
               Built by{" "}
               <a
                 href="https://midpilot.com"
                 className=" hover:underline"
               >
                 Midpilot
-              </a>{" "}
+              </a>
           
               .
             </p>

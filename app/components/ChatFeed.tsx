@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 import Image from "next/image";
+import { EqualIcon } from "lucide-react";
 interface ChatFeedProps {
   initialMessage?: string;
   onClose: () => void;
@@ -276,20 +277,14 @@ export default function ChatFeed({ initialMessage, onClose }: ChatFeedProps) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <div className="flex items-center gap-2">
-          <Image
-            src="/favicon.svg"
-            alt="Open Operator"
-            className="w-8 h-8"
-            width={32}
-            height={32}
-          />
-          <span className="font-ppneue text-gray-900">Open Operator</span>
+        <div className="flex items-center gap-1">
+                <EqualIcon className="w-4 h-4" />
+              <span className="font-inter font-semibold text-black">Midpilot</span>
         </div>
         <motion.button
           onClick={onClose}
-          className="px-4 py-2 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors rounded-md font-ppsupply flex items-center gap-2"
-          whileHover={{ scale: 1.02 }}
+          className="px-4 py-2 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors rounded-md font-inter flex items-center gap-2"
+          // whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           Close
@@ -366,10 +361,10 @@ export default function ChatFeed({ initialMessage, onClose }: ChatFeedProps) {
                 {initialMessage && (
                   <motion.div
                     variants={messageVariants}
-                    className="p-4 bg-blue-50 rounded-lg font-ppsupply"
+                    className="p-4 bg-black rounded-lg font-inter"
                   >
-                    <p className="font-semibold">Goal:</p>
-                    <p>{initialMessage}</p>
+                    <p className="font-semibold text-white">Goal:</p>
+                    <p className="text-white">{initialMessage}</p>
                   </motion.div>
                 )}
 
@@ -377,7 +372,7 @@ export default function ChatFeed({ initialMessage, onClose }: ChatFeedProps) {
                   <motion.div
                     key={index}
                     variants={messageVariants}
-                    className="p-4 bg-white border border-gray-200 rounded-lg font-ppsupply space-y-2"
+                    className="p-4 bg-white border border-gray-200 rounded-lg font-inter space-y-2"
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500">
@@ -397,7 +392,7 @@ export default function ChatFeed({ initialMessage, onClose }: ChatFeedProps) {
                 {isLoading && (
                   <motion.div
                     variants={messageVariants}
-                    className="p-4 bg-gray-50 rounded-lg font-ppsupply animate-pulse"
+                    className="p-4 bg-gray-50 rounded-lg font-inter animate-pulse"
                   >
                     Processing...
                   </motion.div>

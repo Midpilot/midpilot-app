@@ -1,3 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="73" height="74" viewBox="0 0 73 74"><image width="73" height="74" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAABKCAYAAAD353lyAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAKVSURBVHgB7Zk/aFNRFMbPi0m0ReOsFuwoUkfBwUEU6qYOGRx0sIODgzi4OvhnETrURcGhi252UAeHDnYVdBOKbh2qa9v0b5KXvr7zSiHNy2u/FnruvfD9ICTcZAg/7j33O+eJkH2JFkaGrwkppixz5UiSGSGFJHH0vCRkXygJgJIAKAmAkgAoCYCSACgJgJIAKAmAkgAoCYCSACgJgJIAKAmAkgAoCaAsRgy8HId/m6w0ZPPfvMQz09m7a6LFkfOJGHD695wchvjnD1l/9tSZrEQCmHGXL1+Rk5++SeV2XVwRRE2KTtVk8NV4JswFZjWpl2S5kb36UTo71Hd9IBW1fPOqWONMUvPDpDTfTRR+X02P1/FHT3YJ08967NpfpsQSb49bKxWx9vhhbr1yfVSs8bomdf7OZrdbN8cuXBRrvC/cPuQkJm4ASgLwXlLp3O44UBQbjvQ/iMdoDOgNkJ0/s2KNs5wU1WoSFYRGJctJ98dy6/H3abHG+wa3m83/8+aJO4gGdwetRasP7ooLgpGkTa62KS4IKgJonareGxNrnBXudlqAdfJYRHRmSKp36rmJwIl0N7W/TknSsIsCziTpVd76vHc3r1MCnSN1D9z02FVu1aX1cVKs8P64rb9+kds11sM37yXprRb/cjsJCKJwW9affrDBBQhCkusmN4gpQG+hth7EeS1Jm+DBN+9z623jJtdZTtreHcVtRvZk5MZolou60SZ3rxB6FDiVdJi8s/F2wvy2C+p2a6aCrJ+5Kc520kHQ20xbFH2g6QJvJakY7e86adpWOS5m2zuYSVq6NCyhwsQNQEkAlARASQCUBEBJAJQEQEkAlARASQCUBEBJAJQEQEkAlARASQCUBEBJAJQEQEkAW7uKtkzYOa/qAAAAAElFTkSuQmCC"></image><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
-@media (prefers-color-scheme: dark) { :root { filter: none; } }
-</style></svg>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="180.000000pt" height="180.000000pt" viewBox="0 0 180.000000 180.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,180.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 900 l0 -900 900 0 900 0 0 900 0 900 -900 0 -900 0 0 -900z m1388
+273 l-3 -128 -485 0 -485 0 -3 128 -3 127 491 0 491 0 -3 -127z m2 -548 l0
+-125 -490 0 -490 0 0 125 0 125 490 0 490 0 0 -125z"/>
+</g>
+</svg>
