@@ -77,7 +77,7 @@ export default function Home() {
           </nav>
 
           {/* Main Content */}
-          <main className="flex-1 flex flex-col items-center justify-center p-6">
+          <main className="flex-1 flex flex-col items-start justify-start sm:items-center sm:justify-center sm:p-6">
             <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
              
               <div className="p-8 flex flex-col items-center gap-8">
@@ -134,7 +134,7 @@ export default function Home() {
                     What is the price of Bitcoin?
                   </button>
                   <button
-                    onClick={() => startChat("Summarize NN group&rsquo;s latest article")}
+                    onClick={() => startChat("Summarize NN groups latest article")}
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
                     Summarize NN group&rsquo;s latest article
@@ -142,16 +142,17 @@ export default function Home() {
                   <button
                     onClick={() =>
                       startChat(
-                        "Summarize latest paper on autonomous shipping on Arxiv"
+                        "Give me the latest news on autonomous shipping"
                       )
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    Summarize latest paper on autonomous ships on Arxiv
+                    Give me the latest news on autonomous shipping
                   </button>
                 </div>
               </div>
             </div>
+            <div className="flex flex-col p-6 items-center justify-center">
             <p className="font-semibold font-inter text-center mt-8">
               Built by{" "}
               <a
@@ -180,6 +181,7 @@ export default function Home() {
               </a>
               .
             </p>
+            </div>
           </main>
         </div>
       ) : (
