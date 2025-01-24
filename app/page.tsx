@@ -79,14 +79,7 @@ export default function Home() {
           {/* Main Content */}
           <main className="flex-1 flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-              <div className="w-full h-12 bg-white border-b border-gray-200 flex items-center px-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                </div>
-              </div>
-
+             
               <div className="p-8 flex flex-col items-center gap-8">
                 <div className="flex flex-col items-center gap-3">
                   <h1 className="text-2xl font-inter font-semibold text-black text-center">
