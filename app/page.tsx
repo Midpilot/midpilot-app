@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ChatFeed from "./components/ChatFeed";
 import AnimatedButton from "./components/AnimatedButton";
-import Image from "next/image";
 import posthog from "posthog-js";
 import { EqualIcon } from "lucide-react";
 
@@ -142,10 +141,10 @@ export default function Home() {
                     What is the price of Bitcoin?
                   </button>
                   <button
-                    onClick={() => startChat("Summarize NN group's latest article")}
+                    onClick={() => startChat("Summarize NN group&rsquo;s latest article")}
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    Summarize NN group's latest article
+                    Summarize NN group&rsquo;s latest article
                   </button>
                   <button
                     onClick={() =>
