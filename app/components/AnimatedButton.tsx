@@ -21,8 +21,7 @@ export default function AnimatedButton({
     <motion.button
       type={type}
       onClick={onClick}
-      className={`absolute right-2 top-1 px-4 py-2 bg-[#FF3B00] hover:bg-[#FF2200] text-white font-medium transition-colors rounded ${className} group`}
-      whileHover={{ scale: 1.02 }}
+      className={`absolute right-2 top-1 px-4 py-2 bg-black hover:bg-gray-800 text-white font-medium transition-colors rounded ${className} group`}
       whileTap={{ scale: 0.95 }}
       transition={{
         type: "spring",

@@ -6,6 +6,8 @@ import ChatFeed from "./components/ChatFeed";
 import AnimatedButton from "./components/AnimatedButton";
 import Image from "next/image";
 import posthog from "posthog-js";
+import { EqualIcon } from "lucide-react";
+
 
 export default function Home() {
   const [isChatVisible, setIsChatVisible] = useState(false);
@@ -67,34 +69,17 @@ export default function Home() {
           {/* Top Navigation */}
           <nav className="flex justify-between items-center px-8 py-4 bg-white border-b border-gray-200">
             <div className="flex items-center gap-2">
-              <Image
-                src="/favicon.svg"
-                alt="Open Operator"
-                className="w-8 h-8"
-                width={32}
-                height={32}
-              />
-              <span className="font-ppneue text-gray-900">Open Operator</span>
+                <EqualIcon className="w-4 h-4" />
+              <span className="font-inter font-semibold text-black">Midpilot</span>
             </div>
             <div className="flex items-center gap-2">
-              <a href="https://github.com/browserbase/open-operator">
-                <button className="h-fit flex items-center justify-center px-4 py-2 rounded-sm bg-black gap-2 text-sm text-white border border-pillSecondary">
-                  <Image
-                    src="/github.svg"
-                    alt="GitHub"
-                    width={20}
-                    height={20}
-                    className="mr-2"
-                  />
-                  View GitHub
-                </button>
-              </a>
+              
             </div>
           </nav>
 
           {/* Main Content */}
           <main className="flex-1 flex flex-col items-center justify-center p-6">
-            <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden">
+            <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
               <div className="w-full h-12 bg-white border-b border-gray-200 flex items-center px-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -105,11 +90,11 @@ export default function Home() {
 
               <div className="p-8 flex flex-col items-center gap-8">
                 <div className="flex flex-col items-center gap-3">
-                  <h1 className="text-2xl font-ppneue text-gray-900 text-center">
-                    Open Operator
+                  <h1 className="text-2xl font-inter font-semibold text-black text-center">
+                    Midpilot
                   </h1>
-                  <p className="text-base font-ppsupply text-gray-500 text-center">
-                    Hit run to watch AI browse the web.
+                  <p className="text-base font-inter text-black text-center">
+                  Let AI work for you using a browser.
                   </p>
                 </div>
 
@@ -131,59 +116,75 @@ export default function Home() {
                       name="message"
                       type="text"
                       placeholder="What's the price of NVIDIA stock?"
-                      className="w-full px-4 py-3 pr-[100px] border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF3B00] focus:border-transparent font-ppsupply"
+                      className="w-full px-4 py-3 pr-[100px] border border-black text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-inter rounded-md"
                     />
                     <AnimatedButton type="submit">Run</AnimatedButton>
                   </div>
                 </form>
                 <div className="grid grid-cols-2 gap-3 w-full">
+                  
+                  <button
+                    onClick={() =>
+                      startChat("What does the company Midpilot do?")
+                    }
+                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
+                  >
+                    What does the company Midpilot do?
+                  </button>
                   <button
                     onClick={() =>
                       startChat(
-                        "Who is the top GitHub contributor to Stagehand by Browserbase?"
+                        "Find the latest price of Bitcoin"
                       )
                     }
-                    className="p-3 text-sm text-gray-600 border border-gray-200 hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply text-left"
+                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    Who is the top contributor to Stagehand?
+                    What is the price of Bitcoin?
+                  </button>
+                  <button
+                    onClick={() => startChat("Summarize NN group's latest article")}
+                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
+                  >
+                    Summarize NN group's latest article
                   </button>
                   <button
                     onClick={() =>
-                      startChat("How many wins do the 49ers have?")
+                      startChat(
+                        "Summarize latest paper on autonomous ships on Google Scholar"
+                      )
                     }
-                    className="p-3 text-sm text-gray-600 border border-gray-200 hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply text-left"
+                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    How many wins do the 49ers have?
-                  </button>
-                  <button
-                    onClick={() => startChat("What is Stephen Curry's PPG?")}
-                    className="p-3 text-sm text-gray-600 border border-gray-200 hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply text-left"
-                  >
-                    What is Stephen Curry&apos;s PPG?
-                  </button>
-                  <button
-                    onClick={() => startChat("How much is NVIDIA stock?")}
-                    className="p-3 text-sm text-gray-600 border border-gray-200 hover:border-[#FF3B00] hover:text-[#FF3B00] transition-colors font-ppsupply text-left"
-                  >
-                    How much is NVIDIA stock?
+                    Summarize latest paper on autonomous ships on Google Scholar
                   </button>
                 </div>
               </div>
             </div>
             <p className="text-base font-ppsupply text-center mt-8">
-              Powered by{" "}
+              Built by{" "}
               <a
-                href="https://stagehand.dev"
-                className="text-yellow-600 hover:underline"
+                href="https://midpilot.com"
+                className=" hover:underline"
               >
-                🤘 Stagehand
+                Midpilot
               </a>{" "}
-              on{" "}
+          
+              .
+            </p>
+            <p className="text-xs text-gray-500 text-center mt-2">
+              By using this service, you agree to our{" "}
               <a
-                href="https://browserbase.com"
-                className="text-[#FF3B00] hover:underline"
+                href="https://midpilot.com/terms"
+                className="underline hover:text-gray-700"
               >
-                🅱️ Browserbase
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://midpilot.com/privacy"
+                className="underline hover:text-gray-700"
+              >
+                Privacy Policy
               </a>
               .
             </p>
