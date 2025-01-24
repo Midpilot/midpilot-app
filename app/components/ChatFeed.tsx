@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
-import Image from "next/image";
 import { EqualIcon } from "lucide-react";
+
 interface ChatFeedProps {
   initialMessage?: string;
   onClose: () => void;
