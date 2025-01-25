@@ -112,7 +112,7 @@ export default function Home() {
                     <input
                       name="message"
                       type="text"
-                      placeholder="What's the price of NVIDIA stock?"
+                      placeholder="Find the price of NVIDIA stock"
                       className="w-full px-4 py-3 pr-[100px] border border-black text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-inter rounded-md"
                     />
                     <AnimatedButton type="submit">Run</AnimatedButton>
