@@ -293,7 +293,7 @@ export default function ChatFeed({ initialMessage, onClose }: ChatFeedProps) {
           )}
         </motion.button>
       </motion.nav>
-      <main className="flex-1 flex flex-col items-center p-6">
+      <main className="flex-1 flex flex-col items-center sm:p-6">
         <motion.div
           className="w-full max-w-[1280px] bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden"
           initial={{ y: 20, opacity: 0 }}

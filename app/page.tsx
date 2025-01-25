@@ -142,12 +142,12 @@ export default function Home() {
                   <button
                     onClick={() =>
                       startChat(
-                        "Give me the latest news on autonomous shipping"
+                        "What is the latest news on Shifter"
                       )
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    Give me the latest news on autonomous shipping
+                    What is the latest news on Shifter?
                   </button>
                 </div>
               </div>
