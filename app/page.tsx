@@ -88,7 +88,7 @@ export default function Home() {
               <div className="p-8 flex flex-col items-center gap-8">
                 <div className="flex flex-col items-center gap-3">
                   <h1 className="text-2xl font-inter font-semibold text-black text-center">
-                    Midpilot
+                    What do you want Midpilot to do?
                   </h1>
                   <p className="text-base font-inter text-black text-center">
                   Let AI work for you using its own browser.
@@ -122,21 +122,21 @@ export default function Home() {
                   
                   <button
                     onClick={() =>
-                      startChat("What does the company Midpilot do?")
+                      startChat("Find out what the company Midpilot does")
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    What does the company Midpilot do?
+                    Find out what the company Midpilot does
                   </button>
                   <button
                     onClick={() =>
                       startChat(
-                        "Find the latest price of Bitcoin"
+                        "Find the price of Bitcoin"
                       )
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    What is the price of Bitcoin?
+                    Find the price of Bitcoin
                   </button>
                   <button
                     onClick={() => startChat("Summarize NN groups latest article")}
@@ -147,12 +147,12 @@ export default function Home() {
                   <button
                     onClick={() =>
                       startChat(
-                        "What is the latest news on Shifter.no"
+                        "Give me an overview of the latest articles on Shifter.no"
                       )
                     }
                     className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
                   >
-                    What is the latest news on Shifter.no?
+                    Give me an overview of the latest articles on Shifter.no
                   </button>
                 </div>
               </div>
