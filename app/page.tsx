@@ -86,7 +86,7 @@ export default function Home() {
                     Midpilot
                   </h1>
                   <p className="text-base font-inter text-black text-center">
-                  Let AI work for you using a browser.
+                  Let AI work for you using its own browser.
                   </p>
                 </div>
 
