@@ -1,5 +1,6 @@
 "use client";
 
+import {RegisterLink, LoginLink, LogoutLink} from "@kinde-oss/kinde-auth-nextjs/components";
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ChatFeed from "./components/ChatFeed";
@@ -82,6 +83,9 @@ export default function Home() {
           </nav>
 
           {/* Main Content */}
+          {/* <LoginLink>Login</LoginLink>
+          <RegisterLink>Register</RegisterLink>
+          <LogoutLink>Logout</LogoutLink> */}
           <main className="flex-1 flex flex-col items-start justify-start sm:items-center sm:justify-center sm:p-6">
             <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
              
