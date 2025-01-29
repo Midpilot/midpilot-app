@@ -17,7 +17,7 @@ export default function Home() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    console.log("isAuthenticated", isAuthenticated);
+    console.log(isAuthenticated)
     const handleKeyDown = (e: KeyboardEvent) => {
       // Handle CMD+Enter to submit the form when chat is not visible
       if (!isChatVisible && (e.metaKey || e.ctrlKey) && e.key === "Enter") {
