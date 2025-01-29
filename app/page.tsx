@@ -108,12 +108,12 @@ export default function Home() {
                   }}
                   className="w-full max-w-[720px] flex flex-col items-center gap-3"
                 >
-                  <div className="flex items-center w-full gap-2">
+                  <div className="relative w-full">
                     <input
                       name="message"
                       type="text"
                       placeholder="Find the price of NVIDIA stock"
-                      className="min-w-0 flex-1 px-4 py-3 border border-black text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-inter rounded-md"
+                      className="w-full px-4 py-3 pr-[80px] border border-black text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-inter rounded-md"
                     />
                     <AnimatedButton type="submit">Run</AnimatedButton>
                   </div>
