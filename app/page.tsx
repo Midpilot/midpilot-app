@@ -4,10 +4,10 @@ import {RegisterLink, LoginLink, LogoutLink} from "@kinde-oss/kinde-auth-nextjs/
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ChatFeed from "./components/ChatFeed";
-import AnimatedButton from "./components/AnimatedButton";
-import posthog from "posthog-js";
 import { EqualIcon } from "lucide-react";
 import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
+import ActionBar from "./components/ActionBar";
+import UserDashboard from "./components/UserDashboard";
 
 
 export default function Home() {
@@ -17,7 +17,6 @@ export default function Home() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    console.log(isAuthenticated)
     const handleKeyDown = (e: KeyboardEvent) => {
       // Handle CMD+Enter to submit the form when chat is not visible
       if (!isChatVisible && (e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -67,14 +66,6 @@ export default function Home() {
     (finalMessage: string) => {
       setInitialMessage(finalMessage);
       setIsChatVisible(true);
-
-      try {
-        posthog.capture("submit_message", {
-          message: finalMessage,
-        });
-      } catch (e) {
-        console.error(e);
-      }
     },
     [setInitialMessage, setIsChatVisible]
   );
@@ -82,7 +73,7 @@ export default function Home() {
   return (
     <AnimatePresence mode="wait">
       {!isChatVisible ? (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="min-h-screen bg-background">
           {/* Top Navigation */}
           <nav className="flex justify-between items-center px-8 py-4 bg-white border-b border-gray-200">
             <div className="flex items-center gap-1">
@@ -125,84 +116,13 @@ export default function Home() {
           </nav>
 
           {/* Main Content */}
-          {/* <LoginLink>Login</LoginLink>
-          <RegisterLink>Register</RegisterLink>
-          <LogoutLink>Logout</LogoutLink> */}
-          <main className="flex-1 flex flex-col items-start justify-start sm:items-center sm:justify-center sm:p-6">
-            <div className="w-full max-w-[640px] bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-             
-              <div className="p-8 flex flex-col items-center gap-8">
-                <div className="flex flex-col items-center gap-3">
-                  <h1 className="text-2xl font-inter font-semibold text-black text-center">
-                    What do you want Midpilot to do?
-                  </h1>
-                  <p className="text-base font-inter text-black text-center">
-                  Let AI work for you using its own browser.
-                  </p>
-                </div>
-
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const input = e.currentTarget.querySelector(
-                      'input[name="message"]'
-                    ) as HTMLInputElement;
-                    const message = (formData.get("message") as string).trim();
-                    const finalMessage = message || input.placeholder;
-                    startChat(finalMessage);
-                  }}
-                  className="w-full max-w-[720px] flex flex-col items-center gap-3"
-                >
-                  <div className="relative w-full">
-                    <input
-                      name="message"
-                      type="text"
-                      placeholder="Find the price of NVIDIA stock"
-                      className="w-full px-4 py-3 pr-[100px] border border-black text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent font-inter rounded-md"
-                    />
-                    <AnimatedButton type="submit">Run</AnimatedButton>
-                  </div>
-                </form>
-                <div className="grid grid-cols-2 gap-3 w-full">
-                  
-                  <button
-                    onClick={() =>
-                      startChat("Find out what the company Midpilot does")
-                    }
-                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
-                  >
-                    Find out what the company Midpilot does
-                  </button>
-                  <button
-                    onClick={() =>
-                      startChat(
-                        "Find the price of Bitcoin"
-                      )
-                    }
-                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
-                  >
-                    Find the price of Bitcoin
-                  </button>
-                  <button
-                    onClick={() => startChat("Summarize NN groups latest article")}
-                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
-                  >
-                    Summarize NN group&rsquo;s latest article
-                  </button>
-                  <button
-                    onClick={() =>
-                      startChat(
-                        "Give me an overview of the latest articles on Shifter.no"
-                      )
-                    }
-                    className="p-3 text-sm text-black border border-black hover:border-black hover:text-black hover:bg-gray-50 transition-colors font-inter text-left rounded-md"
-                  >
-                    Give me an overview of the latest articles on Shifter.no
-                  </button>
-                </div>
-              </div>
-            </div>
+          <main className="flex-1 flex flex-col items-start justify-start sm:items-center sm:justify-center sm:p-6 bg-gray-50">
+            {isAuthenticated ? (
+              <UserDashboard onStartChat={startChat} />
+            ) : (
+              <ActionBar onStartChat={startChat} />
+            )}
+            
             <div className="flex flex-col p-6 items-center justify-center">
             <p className="font-semibold font-inter text-center mt-8">
               Built by{" "}
