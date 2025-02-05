@@ -109,7 +109,7 @@ export default function Home() {
               ) : (
                 <>
                   <LoginLink className="text-sm font-inter text-gray-600 hover:text-gray-900">Sign in</LoginLink>
-                  <RegisterLink className="px-4 py-2 text-sm font-inter text-white bg-black rounded-md hover:bg-gray-800">Sign up</RegisterLink>
+                  {/* <RegisterLink className="px-4 py-2 text-sm font-inter text-white bg-black rounded-md hover:bg-gray-800">Sign up</RegisterLink> */}
                 </>
               )}
             </div>
