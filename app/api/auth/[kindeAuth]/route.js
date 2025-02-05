@@ -1,6 +1,6 @@
 import {handleAuth} from "@kinde-oss/kinde-auth-nextjs/server";
 
-const redirectConfig = process.env.VERCEL_URL && process.env.NODE_ENV === 'development' ? {
+const redirectConfig = process.env.VERCEL_URL ? {
   postLoginRedirectURL: `https://${process.env.VERCEL_URL}`,
   postLogoutRedirectURL: `https://${process.env.VERCEL_URL}`
 } : {};
