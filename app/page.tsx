@@ -1,6 +1,6 @@
 "use client";
 
-import {RegisterLink, LoginLink, LogoutLink} from "@kinde-oss/kinde-auth-nextjs/components";
+import { LoginLink, LogoutLink} from "@kinde-oss/kinde-auth-nextjs/components";
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ChatFeed from "./components/ChatFeed";
