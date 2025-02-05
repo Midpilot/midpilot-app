@@ -38,7 +38,7 @@ export default function UserDashboard({ onStartChat }: UserDashboardProps) {
       clearInterval(dotsInterval);
       clearInterval(messageInterval);
     };
-  }, [currentUpdateIndex]); // Add currentUpdateIndex to dependencies
+  }, [currentUpdateIndex, statusUpdates.length]); // Added statusUpdates.length to dependencies
 
   const startChat = useCallback(
     (finalMessage: string) => {
@@ -75,7 +75,7 @@ export default function UserDashboard({ onStartChat }: UserDashboardProps) {
       {/* Ongoing Tasks */}
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Tasks we're working on right now:</CardTitle>
+          <CardTitle>Tasks we&apos;re working on right now:</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
