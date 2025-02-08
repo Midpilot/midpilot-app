@@ -90,3 +90,65 @@ Open Operator is open source software licensed under the MIT license.
 ## Acknowledgments
 
 This project is inspired by OpenAI's Operator feature and builds upon various open source technologies including Next.js, React, Browserbase, and Stagehand.
+
+# Midpilot Monorepo Refactoring Plan
+
+## Overview
+
+This plan outlines our strategy to refactor Midpilot-App into a monorepo structure by combining our Next.js application with the Browser Use Python API. Bringing these two projects under one roof will improve development, testing, and deployment efficiency.
+
+## Proposed Directory Structure
+
+Below is the proposed repository tree for our monorepo:
+
+midpilot-monorepo/
+├── apps/
+│ ├── midpilot-app/ # Next.js application (frontend + API)
+│ └── browser-use-api/ # Python service implementing the Browser Use API
+├── packages/ # (Optional) Shared code or contracts for future use
+├── README.md # This refactoring plan and overall documentation
+├── .gitignore
+└── (additional config/CI files)
+```
+
+## Refactoring Steps
+
+1. **Monorepo Initialization**
+   - Create the new repository structure as shown above.
+   - Initialize Git in the repository and configure a suitable `.gitignore`.
+
+2. **Migrating Midpilot-App**
+   - Move all of the existing Midpilot-App source code (Next.js pages, components, API routes, etc.) into `apps/midpilot-app`.
+   - Adjust any relative paths and update configurations (e.g., `package.json`, environment variables) to match the new structure.
+   - Ensure that all functionality, including the OperatorProvider abstraction, works as expected within its new location.
+
+3. **Integrating Browser Use API**
+   - Add the Browser Use Python project into `apps/browser-use-api` as per the instructions in the [browser-use repository](https://github.com/browser-use/browser-use).
+   - Configure the Python project's dependency management (using `pyproject.toml`, `requirements.txt`, etc.) accordingly.
+   - Validate that the Python API exposes the expected endpoints (e.g., `/session/create` and `/session/{sessionId}/debug`).
+   - Update the Midpilot-App's environment (e.g., `BROWSER_USE_SERVICE_URL`) so that it correctly points to the deployed Python service.
+
+4. **CI/CD & Build Pipeline**
+   - Update your CI/CD configurations to build, test, and deploy both the Next.js and Python projects.
+   - Consider tools such as Nx, Turborepo, or Lerna for managing cross-project dependencies and tasks if the need arises.
+
+5. **Documentation & Communication**
+   - Maintain this `README.md` with updates as the refactoring progresses.
+   - Ensure that all team members are informed about the new monorepo structure and any changes in development workflows.
+
+## Future Considerations
+
+- **Shared Packages:**  
+  As needed, code that is shared between the Node.js and Python projects (like API contracts) can be moved into the `packages/` directory.
+
+- **Advanced Tooling:**  
+  Evaluate using advanced monorepo tools such as Nx, Turborepo, or Lerna to improve dependency management, build caching, and task orchestration across the projects.
+
+- **Formal A/B Testing Framework:**  
+  Currently, operator switching is managed via environment variables; future improvements might include a more formal A/B testing framework for enhanced analytics and feature rollouts.
+
+## Conclusion
+
+Transitioning to a monorepo structure by combining the Midpilot-App and Browser Use Python API will unify our development process, simplify testing, and streamline deployment. This refactoring plan provides a clear roadmap for achieving this integration, with the flexibility to expand shared functionality as our platform evolves.
+
+*Future contributors should refer to this document for details on the monorepo structure and development guidelines.*
