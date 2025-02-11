@@ -1,0 +1,106 @@
+[
+    {
+      "id": "test-123",
+      "task": "Visit Wikipedia and read about ducks",
+      "live_url": "https://en.wikipedia.org/wiki/Duck",
+      "output": "Task created. I will visit Wikipedia to read about ducks.",
+      "status": "created",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "finished_at": "",
+      "steps": [
+        {
+          "id": "step-1",
+          "step": 1,
+          "evaluation_previous_goal": "",
+          "next_goal": "Navigate to Wikipedia duck page"
+        }
+      ]
+    },
+    {
+      "id": "test-123",
+      "task": "Visit Wikipedia and read about ducks",
+      "live_url": "https://en.wikipedia.org/wiki/Duck",
+      "output": "Navigating to the Wikipedia page about ducks.",
+      "status": "running",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "finished_at": "",
+      "steps": [
+        {
+          "id": "step-1",
+          "step": 1,
+          "evaluation_previous_goal": "",
+          "next_goal": "Navigate to Wikipedia duck page"
+        },
+        {
+          "id": "step-2",
+          "step": 2,
+          "evaluation_previous_goal": "Successfully opened browser",
+          "next_goal": "Read the introduction section"
+        }
+      ]
+    },
+    {
+      "id": "test-123",
+      "task": "Visit Wikipedia and read about ducks",
+      "live_url": "https://en.wikipedia.org/wiki/Duck",
+      "output": "Reading the introduction section about ducks.",
+      "status": "running",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "finished_at": "",
+      "steps": [
+        {
+          "id": "step-1",
+          "step": 1,
+          "evaluation_previous_goal": "",
+          "next_goal": "Navigate to Wikipedia duck page"
+        },
+        {
+          "id": "step-2",
+          "step": 2,
+          "evaluation_previous_goal": "Successfully opened browser",
+          "next_goal": "Read the introduction section"
+        },
+        {
+          "id": "step-3",
+          "step": 3,
+          "evaluation_previous_goal": "Found the introduction section",
+          "next_goal": "Summarize key points about ducks"
+        }
+      ]
+    },
+    {
+      "id": "test-123",
+      "task": "Visit Wikipedia and read about ducks",
+      "live_url": "https://en.wikipedia.org/wiki/Duck",
+      "output": "Completed reading about ducks. Ducks are waterfowl belonging to the family Anatidae. They are related to swans and geese and are commonly found in both fresh and salt water.",
+      "status": "finished",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "finished_at": "2025-01-01T00:00:08.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "step": 1,
+          "evaluation_previous_goal": "",
+          "next_goal": "Navigate to Wikipedia duck page"
+        },
+        {
+          "id": "step-2",
+          "step": 2,
+          "evaluation_previous_goal": "Successfully opened browser",
+          "next_goal": "Read the introduction section"
+        },
+        {
+          "id": "step-3",
+          "step": 3,
+          "evaluation_previous_goal": "Found the introduction section",
+          "next_goal": "Summarize key points about ducks"
+        },
+        {
+          "id": "step-4",
+          "step": 4,
+          "evaluation_previous_goal": "Read and understood the introduction",
+          "next_goal": "Task complete"
+        }
+      ]
+    }
+  ];
