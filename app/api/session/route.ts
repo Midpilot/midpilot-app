@@ -121,8 +121,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const timezone = body.timezone as string;
+    const goal = body.goal as string;
+    console.log("Creating session with goal:", goal);
     const operator = await getOperatorProvider();
-    const session = await operator.createSession(timezone);
+    const session = await operator.createSession(timezone, goal);
     const liveUrl = await operator.getDebugUrl(session.id);
     return NextResponse.json({
       success: true,

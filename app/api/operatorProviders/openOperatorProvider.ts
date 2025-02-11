@@ -3,7 +3,8 @@ import Browserbase from '@browserbasehq/sdk';
 import { getClosestRegion } from '../../lib/getClosestRegion'; // Reuse your existing helper if possible
 
 const OpenOperatorProvider = {
-  createSession: async (timezone?: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  createSession: async (timezone?: string, goal?: string) => {
     const bb = new Browserbase({
       apiKey: process.env.BROWSERBASE_API_KEY!,
     });
@@ -28,6 +29,22 @@ const OpenOperatorProvider = {
     const session = await bb.sessions.debug(sessionId);
     return session.debuggerFullscreenUrl;
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  endSession: async (sessionId: string) => {
+    // If open-operator has native status endpoints or streaming,
+    // implement it here. Otherwise, return a default status.
+    return "running";
+  },
+  // Optional: simulate or proxy status updates if available
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getTaskStatus: async (sessionId: string) => {
+    // If open-operator has native status endpoints or streaming,
+    // implement it here. For now, return a basic BrowserStep
+    return {
+      text: "Task in progress",
+      status: "running"
+    };
+  }
 };
 
 export default OpenOperatorProvider; 

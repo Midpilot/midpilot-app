@@ -12,7 +12,7 @@ const ActionBar = ({ onStartChat }: ActionBarProps) => {
   const startChat = useCallback(
     (finalMessage: string) => {
       onStartChat(finalMessage);
-
+      
       try {
         posthog.capture("submit_message", {
           message: finalMessage,
