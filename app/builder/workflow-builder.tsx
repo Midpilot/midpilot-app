@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { motion, Reorder } from "framer-motion"
 import { Plus, Trash2, Play, Wand2, AlertTriangle } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,11 +11,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { debounce } from "lodash"
 
 interface Substep {
   id: string
   title: string
   description: string
+  isEditing?: boolean
 }
 
 interface WorkflowStep {
@@ -25,12 +27,12 @@ interface WorkflowStep {
   substeps: Substep[]
 }
 
-export default function WorkflowBuilder() {
-  const [steps, setSteps] = useState<WorkflowStep[]>([
-    { id: "1", title: "Step 1", description: "Description for Step 1", substeps: [] },
-    { id: "2", title: "Step 2", description: "Description for Step 2", substeps: [] },
-    { id: "3", title: "Step 3", description: "Description for Step 3", substeps: [] },
-  ])
+interface WorkflowBuilderProps {
+  initialSteps?: WorkflowStep[]
+}
+
+export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderProps) {
+  const [steps, setSteps] = useState<WorkflowStep[]>(initialSteps)
   const [editingTitle, setEditingTitle] = useState(false)
   const [workflowTitle, setWorkflowTitle] = useState("Workflow Builder")
   const [editingStep, setEditingStep] = useState<WorkflowStep | null>(null)
@@ -38,12 +40,14 @@ export default function WorkflowBuilder() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [generatedSubsteps, setGeneratedSubsteps] = useState<Substep[]>([])
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | null>(null)
 
   const addStep = () => {
     const newStep: WorkflowStep = {
       id: `${Date.now()}`,
       title: `Step ${steps.length + 1}`,
-      description: `Description for Step ${steps.length + 1}`,
+      description: ``,
       substeps: [],
     }
     setSteps([...steps, newStep])
@@ -54,18 +58,15 @@ export default function WorkflowBuilder() {
     setIsDialogOpen(true)
   }
 
-  const handleSaveEdit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (editingStep) {
-      setSteps(steps.map((step) => (step.id === editingStep.id ? editingStep : step)))
-      setIsDialogOpen(false)
-    }
+  const handleDeleteStep = () => {
+    setShowDeleteConfirm(true)
   }
 
-  const handleDeleteStep = () => {
+  const confirmDelete = () => {
     if (editingStep) {
       setSteps(steps.filter((step) => step.id !== editingStep.id))
       setIsDialogOpen(false)
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -73,8 +74,9 @@ export default function WorkflowBuilder() {
     if (editingStep) {
       const newSubstep: Substep = {
         id: `${Date.now()}`,
-        title: `Substep ${editingStep.substeps.length + 1}`,
-        description: `Description for Substep ${editingStep.substeps.length + 1}`,
+        title: "",
+        description: "",
+        isEditing: true
       }
       setEditingStep({
         ...editingStep,
@@ -151,7 +153,7 @@ export default function WorkflowBuilder() {
         }
       }
     } catch (error) {
-      console.error('Failed to generate substeps:', error)
+      console.error('Failed to generate plan:', error)
     } finally {
       setIsGenerating(false)
     }
@@ -165,6 +167,27 @@ export default function WorkflowBuilder() {
       })
       setShowConfirmDialog(false)
       setGeneratedSubsteps([])
+    }
+  }
+
+  const autoSave = useCallback(
+    debounce((updatedStep: WorkflowStep) => {
+      setSaveStatus('saving')
+      setSteps(steps.map((step) => (step.id === updatedStep.id ? updatedStep : step)))
+      setTimeout(() => {
+        setSaveStatus('saved')
+        setTimeout(() => {
+          setSaveStatus(null)
+        }, 2000)
+      }, 500)
+    }, 500),
+    [steps]
+  )
+
+  const updateEditingStep = (updatedStep: WorkflowStep | null) => {
+    setEditingStep(updatedStep)
+    if (updatedStep) {
+      autoSave(updatedStep)
     }
   }
 
@@ -188,8 +211,8 @@ export default function WorkflowBuilder() {
             {workflowTitle}
           </h1>
         )}
-        <Button variant="default">
-          <Play className=" h-4 w-4" /> Run
+        <Button variant="default" disabled={steps.length === 0}>
+          <Play className="h-4 w-4" /> Run
         </Button>
       </div>
       <div className="mb-4">
@@ -197,160 +220,244 @@ export default function WorkflowBuilder() {
           <Plus className="mr-2 h-4 w-4" /> Add Step
         </Button>
       </div>
-      <Reorder.Group axis="x" values={steps} onReorder={setSteps} className="flex space-x-8 overflow-x-auto pb-4">
-        {steps.map((step, index) => (
-          <Reorder.Item key={step.id} value={step}>
-            <div className="relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold">
-                {index + 1}
-              </div>
-              <motion.div
-                whileDrag={{
-                  scale: 1.05,
-                  boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
-                }}
-                onDoubleClick={() => openEditDialog(step)}
-              >
-                <Card className="w-48 cursor-pointer mt-4">
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold">{step.title}</h3>
-                    <p className="text-sm text-gray-500 truncate">{step.description}</p>
-                    {step.substeps.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-2">Substeps: {step.substeps.length}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-          </Reorder.Item>
-        ))}
-        <div className="flex items-center justify-center mt-4">
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full w-12 h-12 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
-            onClick={addStep}
-          >
-            <Plus className="h-6 w-6" />
+      {steps.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Welcome to Workflow Builder!</h3>
+          <p className="text-gray-500 mb-4">Get started by adding steps to create your workflow.</p>
+          <Button onClick={addStep} variant="secondary">
+            <Plus className="mr-2 h-4 w-4" /> Add Your First Step
           </Button>
         </div>
-      </Reorder.Group>
+      ) : (
+        <Reorder.Group axis="x" values={steps} onReorder={setSteps} className="flex space-x-8 overflow-x-auto pb-4">
+          {steps.map((step, index) => (
+            <Reorder.Item key={step.id} value={step}>
+              <div className="relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                  {index + 1}
+                </div>
+                <motion.div
+                  whileDrag={{
+                    scale: 1.05,
+                    boxShadow: "0px 5px 10px rgba(0,0,0,0.1)",
+                  }}
+                  onDoubleClick={() => openEditDialog(step)}
+                >
+                  <Card 
+                    className={`w-72 h-32 cursor-pointer mt-4 ${
+                      !step.description 
+                        ? 'border-red-200 dark:border-red-900' 
+                        : ''
+                    }`}
+                  >
+                    <CardContent className="p-4 flex flex-col justify-between h-full">
+                      <div>
+                        <h3 className="text-sm text-gray-500 truncate">{step.title}</h3>
+                        <p className={`font-semibold ${
+                          !step.description 
+                            ? 'text-red-500 italic' 
+                            : ''
+                        } line-clamp-2`}>
+                          {step.description || 'Missing instructions'}
+                        </p>
+                      </div>
+                      <div>
+                        {step.substeps.length > 0 && (
+                          <p className="text-xs text-gray-400 mb-2">Substeps: {step.substeps.length}</p>
+                        )}
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="w-full py-4 transition-colors hover:bg-secondary-foreground/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditDialog(step);
+                          }}
+                        >
+                          Open
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+            </Reorder.Item>
+          ))}
+          <div className="flex items-center justify-center mt-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full w-12 h-12 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={addStep}
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </div>
+        </Reorder.Group>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Step</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSaveEdit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
-                  Title
-                </Label>
-                <Input
-                  id="title"
-                  value={editingStep?.title || ""}
-                  onChange={(e) => setEditingStep((prev) => (prev ? { ...prev, title: e.target.value } : null))}
-                  className="col-span-3"
-                />
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <DialogTitle className="text-xl">Step Configuration</DialogTitle>
+            {saveStatus && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                {saveStatus === 'saving' ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <div className="h-4 w-4 text-green-500">✓</div>
+                    Saved
+                  </>
+                )}
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <div className="col-span-3 space-y-2">
-                  <Textarea
-                    id="description"
-                    value={editingStep?.description || ""}
-                    onChange={(e) => setEditingStep((prev) => (prev ? { ...prev, description: e.target.value } : null))}
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={generateSubsteps}
-                    disabled={!editingStep?.description || isGenerating}
-                    className="w-full"
-                  >
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    {isGenerating ? "Generating..." : "Generate Substeps with AI"}
-                  </Button>
-                </div>
-              </div>
-              <div className="mt-4">
-                <h4 className="font-semibold mb-2">Substeps</h4>
-                <Button type="button" onClick={addSubstep} className="mb-2">
-                  <Plus className="mr-2 h-4 w-4" /> Add Substep
-                </Button>
-                <Accordion type="multiple" className="w-full">
-                  {editingStep?.substeps.map((substep, index) => (
-                    <AccordionItem value={substep.id} key={substep.id}>
-                      <AccordionTrigger className="text-sm">{substep.title}</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="grid gap-2">
-                          <div className="grid grid-cols-4 items-center gap-2">
-                            <Label htmlFor={`substep-title-${substep.id}`} className="text-right text-xs">
-                              Title
-                            </Label>
-                            <Input
-                              id={`substep-title-${substep.id}`}
-                              value={substep.title}
-                              onChange={(e) => updateSubstep(substep.id, "title", e.target.value)}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-2">
-                            <Label htmlFor={`substep-description-${substep.id}`} className="text-right text-xs">
-                              Description
-                            </Label>
-                            <Textarea
-                              id={`substep-description-${substep.id}`}
-                              value={substep.description}
-                              onChange={(e) => updateSubstep(substep.id, "description", e.target.value)}
-                              className="col-span-3"
-                            />
+            )}
+          </div>
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="description" className="block text-sm font-medium mb-2">
+                Describe what you want the AI to do in this step
+              </Label>
+              <Textarea
+                id="description"
+                value={editingStep?.description || ""}
+                onChange={(e) => updateEditingStep(editingStep ? { ...editingStep, description: e.target.value } : null)}
+                placeholder="Example: 'Search for recent news articles about AI'"
+                className="min-h-[120px]"
+              />
+            </div>
+
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={generateSubsteps}
+              disabled={!editingStep?.description || isGenerating}
+              className="w-full"
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              {isGenerating ? "Generating..." : "Generate plan with AI"}
+            </Button>
+
+            {editingStep?.substeps && (
+              <div>
+                <div className="space-y-2 mt-2">
+                  {editingStep.substeps.map((substep, index) => (
+                    <div key={substep.id} className="flex items-center gap-2 group">
+                      <div className="flex-1 bg-secondary p-3 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm flex-1">
+                            {substep.isEditing ? (
+                              <Input
+                                value={substep.title}
+                                onChange={(e) => updateSubstep(substep.id, 'title', e.target.value)}
+                                onBlur={() => {
+                                  setEditingStep(prev => prev ? {
+                                    ...prev,
+                                    substeps: prev.substeps.map(s => 
+                                      s.id === substep.id ? { ...s, isEditing: false } : s
+                                    )
+                                  } : null)
+                                }}
+                                autoFocus
+                                className="min-w-0"
+                              />
+                            ) : (
+                              <div 
+                                onClick={() => {
+                                  setEditingStep(prev => prev ? {
+                                    ...prev,
+                                    substeps: prev.substeps.map(s => 
+                                      s.id === substep.id ? { ...s, isEditing: true } : s
+                                    )
+                                  } : null)
+                                }}
+                                className="cursor-pointer hover:opacity-70"
+                              >
+                                {index + 1}. {substep.title}
+                              </div>
+                            )}
                           </div>
                           <Button
                             type="button"
-                            variant="destructive"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => deleteSubstep(substep.id)}
-                            className="mt-2"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete Substep
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                      </div>
+                    </div>
                   ))}
-                </Accordion>
+                </div>
+
+                <Button
+                  type="button"
+                  disabled={!editingStep?.description || isGenerating}
+                  variant="ghost"
+                  onClick={addSubstep}
+                  className="mt-3 text-sm"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add new substep
+                </Button>
               </div>
-            </div>
-            <DialogFooter className="flex justify-between">
-              <Button type="button" variant="destructive" onClick={handleDeleteStep}>
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Step
-              </Button>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </form>
+            )}
+          </div>
+
+          <div className="flex justify-start mt-6 pt-6 border-t">
+            <Button type="button" variant="ghost" onClick={handleDeleteStep} className="text-destructive">
+              <Trash2 className="mr-2 h-4 w-4" /> Delete Step
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+      {showConfirmDialog && (
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Replace Existing Detailed Steps?</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="flex items-center gap-2 text-yellow-600">
+                <AlertTriangle className="h-5 w-5" />
+                <p>This will replace all existing detailed steps. Do you want to continue?</p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleConfirmReplace}>
+                Replace Steps
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Replace Existing Substeps?</DialogTitle>
+            <DialogTitle>Delete Step</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <div className="flex items-center gap-2 text-yellow-600">
               <AlertTriangle className="h-5 w-5" />
-              <p>This will replace all existing substeps. Do you want to continue?</p>
+              <p>Are you sure you want to delete this step? This action cannot be undone.</p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleConfirmReplace}>
-              Replace Substeps
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>

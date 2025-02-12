@@ -1,9 +1,47 @@
 "use client";
 
+import { useState } from "react";
 import { EqualIcon } from "lucide-react";
 import WorkflowBuilder from "./workflow-builder";
+import InitialScreen from "../components/InitialScreen";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
+  const [showBuilder, setShowBuilder] = useState(false);
+  const [initialSteps, setInitialSteps] = useState([]);
+  const { toast } = useToast();
+
+  const handleTaskSubmit = async (task: string) => {
+    try {
+      const response = await fetch("/api/generate-workflow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ task }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate workflow");
+      }
+
+      const data = await response.json();
+      setInitialSteps(data.steps);
+      setShowBuilder(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate workflow. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleStartFromScratch = () => {
+    setInitialSteps([]);
+    setShowBuilder(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top Navigation */}
@@ -16,7 +54,14 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <WorkflowBuilder />
+        {showBuilder ? (
+          <WorkflowBuilder initialSteps={initialSteps} />
+        ) : (
+          <InitialScreen 
+            onTaskSubmit={handleTaskSubmit} 
+            onStartFromScratch={handleStartFromScratch}
+          />
+        )}
       </main>
     </div>
   );

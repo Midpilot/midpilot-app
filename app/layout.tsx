@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { PostHogProvider } from "./components/PosthogProvider";
 import { AuthProvider } from "./authProvider";
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default function RootLayout({
         <AuthProvider>
           <PostHogProvider>{children}</PostHogProvider>
         </AuthProvider>
+        <Toaster />
         <Analytics />
       </body>
     </html>
