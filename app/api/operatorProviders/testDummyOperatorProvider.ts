@@ -80,6 +80,29 @@ const TestDummyOperatorProvider = {
 
     return response;
   },
+
+  listTasks: async (page: number = 1, limit: number = 10) => {
+    // Create a larger set of dummy tasks for pagination testing
+    const allDummyTasks = Array.from({ length: 25 }, (_, i) => ({
+      ...DummyTaskResponses[0],
+      id: `dummy-task-${i + 1}`,
+      task: `Dummy Task ${i + 1}`,
+      created_at: new Date(Date.now() - i * 3600000).toISOString(),
+      status: i % 3 === 0 ? 'finished' : i % 3 === 1 ? 'running' : 'failed'
+    }));
+
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const paginatedTasks = allDummyTasks.slice(start, end);
+
+    return {
+      tasks: paginatedTasks,
+      total_count: allDummyTasks.length,
+      total_pages: Math.ceil(allDummyTasks.length / limit),
+      page,
+      limit
+    };
+  }
 };
 
 export default TestDummyOperatorProvider; 

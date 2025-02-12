@@ -125,6 +125,43 @@ const BrowserUseOperatorProvider = {
       finished_at: data.finished_at,
       steps: data.steps || [] // Ensure steps is always an array
     };
+  },
+
+  listTasks: async (page: number = 1, limit: number = 10) => {
+    const response = await fetch(
+      `${browserUseBaseUrl}/tasks?page=${page}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${browserUseApiKey}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      throw new Error(`Error fetching tasks list: ${response.status} ${errorDetails}`);
+    }
+
+    const data = await response.json();
+    
+    // Convert the response to match our interface
+    return {
+      tasks: data.tasks.map((task: any) => ({
+        id: task.id,
+        task: task.task,
+        live_url: task.live_url,
+        output: task.output || '',
+        status: task.status,
+        created_at: task.created_at,
+        finished_at: task.finished_at,
+        steps: task.steps || []
+      })),
+      total_count: data.total_count,
+      total_pages: data.total_pages,
+      page: data.page,
+      limit: data.limit
+    };
   }
 };
 

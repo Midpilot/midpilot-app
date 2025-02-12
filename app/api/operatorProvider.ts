@@ -6,6 +6,14 @@ export type OperatorProvider = {
     endSession?: (sessionId: string) => Promise<void>;
     // Update return type to BrowserSession
     getTaskStatus?: (sessionId: string) => Promise<BrowserSession>;
+    // Add new method for listing tasks
+    listTasks?: (page?: number, limit?: number) => Promise<{
+      tasks: BrowserSession[];
+      total_count: number;
+      total_pages: number;
+      page: number;
+      limit: number;
+    }>;
   };
   
   // Factory function to choose the provider based on environment variable.
