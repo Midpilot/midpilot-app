@@ -29,11 +29,16 @@ const OpenOperatorProvider = {
     const session = await bb.sessions.debug(sessionId);
     return session.debuggerFullscreenUrl;
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   endSession: async (sessionId: string) => {
+    const bb = new Browserbase({
+      apiKey: process.env.BROWSERBASE_API_KEY!,
+    });
     // If open-operator has native status endpoints or streaming,
     // implement it here. Otherwise, return a default status.
-    return "running";
+    await bb.sessions.update(sessionId, {
+      projectId: process.env.BROWSERBASE_PROJECT_ID!,
+      status: "REQUEST_RELEASE",
+    });
   },
   // Optional: simulate or proxy status updates if available
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
