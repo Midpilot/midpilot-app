@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(response || '{}')
-    } catch (e) {
+    } catch {
       console.error('Failed to parse OpenAI response:', response)
       return NextResponse.json(
         { error: 'Invalid response format from AI' },
@@ -51,8 +51,14 @@ export async function POST(req: Request) {
       )
     }
 
+    // Define an interface for the step structure
+    interface Step {
+      title: string;
+      description: string;
+    }
+
     // Transform the steps into the format expected by the workflow builder
-    const workflowSteps = parsedResponse.steps.map((step: any, index: number) => ({
+    const workflowSteps = parsedResponse.steps.map((step: Step, index: number) => ({
       id: `${Date.now()}-${index}`,
       title: step.title,
       description: step.description,

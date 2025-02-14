@@ -68,10 +68,8 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
       inputType: 'none',
     }
     setSteps([...steps, newStep])
-    if (steps.length === 0) {
-      setEditingStep(newStep)
-      setIsDialogOpen(true)
-    }
+    setEditingStep(newStep)
+    setIsDialogOpen(true)
   }
 
   const openEditDialog = (step: WorkflowStep) => {
@@ -151,10 +149,13 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
 
   const deleteSubstep = (substepId: string) => {
     if (editingStep) {
-      setEditingStep({
+      const updatedStep = {
         ...editingStep,
         substeps: editingStep.substeps.filter((substep) => substep.id !== substepId),
-      })
+      };
+      setEditingStep(updatedStep);
+      setSteps(steps.map(step => step.id === editingStep.id ? updatedStep : step));
+      autoSave(updatedStep);
     }
   }
 
@@ -195,15 +196,14 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
           description: step,
         }))
         
-        if (editingStep.substeps.length > 0) {
-          setGeneratedSubsteps(newSubsteps)
-          setShowConfirmDialog(true)
-        } else {
-          setEditingStep({
-            ...editingStep,
-            substeps: newSubsteps,
-          })
+        const updatedStep = {
+          ...editingStep,
+          substeps: newSubsteps,
         }
+
+        setSteps(steps.map(step => step.id === editingStep.id ? updatedStep : step))
+        autoSave(updatedStep)
+        setEditingStep(updatedStep)
       }
     } catch (error) {
       console.error('Failed to generate plan:', error)
@@ -225,24 +225,70 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
 
   const autoSave = useCallback(
     debounce((updatedStep: WorkflowStep) => {
-      setSaveStatus('saving')
-      setSteps(steps.map((step) => (step.id === updatedStep.id ? updatedStep : step)))
+      setSaveStatus('saving');
+      setSteps(steps.map((step) => (step.id === updatedStep.id ? updatedStep : step)));
       setTimeout(() => {
-        setSaveStatus('saved')
+        setSaveStatus('saved');
         setTimeout(() => {
-          setSaveStatus(null)
-        }, 2000)
-      }, 500)
+          setSaveStatus(null);
+        }, 2000);
+      }, 500);
     }, 500),
-    [steps]
+    [steps, setSaveStatus, setSteps]
   )
 
   const updateEditingStep = (updatedStep: WorkflowStep | null) => {
-    setEditingStep(updatedStep)
-    if (updatedStep) {
-      autoSave(updatedStep)
-    }
+    if (!updatedStep) return;
+    
+    // Update the editing step
+    setEditingStep(updatedStep);
+    
+    // Update the step in the steps array
+    setSteps(steps.map(step => 
+      step.id === updatedStep.id ? updatedStep : step
+    ));
+    
+    // Trigger auto-save
+    autoSave(updatedStep);
   }
+
+  const handleRun = () => {
+    let output = '';
+    
+    // Generate each step's task
+    steps.forEach((step, index) => {
+      const stepNumber = index + 1;
+      const taskName = `agent_2_step_${stepNumber}_task`;
+      
+      output += `        # Step ${stepNumber}: ${step.title}\n`;
+      output += `        ${taskName} = (\n`;
+      
+      if (step.isInputStep) {
+        output += `            "${step.inputPrompt}\\n"\n`;
+      } else {
+        output += `            "${step.description}\\n"\n`;
+        if (step.substeps && step.substeps.length > 0) {
+          step.substeps.forEach((substep, subIndex) => {
+            output += `            "${subIndex + 1}. ${substep.title}\\n"\n`;
+          });
+        }
+      }
+      
+      output += '        )\n\n';
+    });
+
+    // Add agent creation code
+    output += '        # Create and run agents sequentially\n';
+    output += '        agents = []\n';
+    output += '        for step, task in enumerate([';
+    
+    // Add task names with proper indentation
+    const taskNames = steps.map((_, index) => `agent_2_step_${index + 1}_task`);
+    output += '\n' + taskNames.map(name => '                                   ' + name).join(',\n');
+    output += '], 1):\n';
+
+    console.log(output);
+  };
 
   return (
     <div className="p-4">
@@ -266,7 +312,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
         )}
         <div className="flex items-center gap-2">
          
-          <Button variant="default" disabled={steps.length === 0}>
+          <Button variant="default" disabled={steps.length === 0} onClick={handleRun}>
             <Play className="h-4 w-4" /> Run
           </Button>
         </div>
@@ -474,11 +520,17 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
               <Tabs 
                 defaultValue="ai-action" 
                 value={editingStep?.isInputStep ? "user-input" : "ai-action"}
-                onValueChange={(value: string) => updateEditingStep(editingStep ? {
-                  ...editingStep,
-                  isInputStep: value === "user-input",
-                  inputType: value === "user-input" ? 'text' : 'none'
-                } : null)}
+                onValueChange={(value: string) => {
+                  if (!editingStep) return;
+                  const updatedStep = {
+                    ...editingStep,
+                    isInputStep: value === "user-input",
+                    inputType: value === "user-input" ? ('text' as const) : ('none' as const),
+                    // Clear substeps when switching to user input
+                    substeps: value === "user-input" ? [] : editingStep.substeps
+                  };
+                  updateEditingStep(updatedStep);
+                }}
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -494,14 +546,14 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                 </TabsList>
                 <TabsContent value="ai-action" className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label className="text-base">Instructions for AI</Label>
+                    <Label className="text-base">What do you want the AI to do in this step?</Label>
                     <div className="relative">
                       <Textarea
                         id="description"
                         value={editingStep?.description || ""}
                         onChange={(e) => updateEditingStep(editingStep ? { ...editingStep, description: e.target.value } : null)}
-                        placeholder="Tell AI what to do (e.g., 'Go to to the order page and collect the order number')..."
-                        className="min-h-[152px] text-base pr-10"
+                        placeholder="E.g. Collect all customer details from latest order"
+                        className=" text-base pr-10"
                         autoFocus
                       />
                       {editingStep?.description && (
@@ -565,6 +617,19 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                       )}
                     </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    onClick={generateSubsteps}
+                    disabled={isGenerating || !editingStep?.description}
+                    className="flex items-center gap-2"
+                  >
+                    {isGenerating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Wand2 className="h-4 w-4" />
+                    )}
+                    Generate plan with AI
+                  </Button>
                 </TabsContent>
                 <TabsContent value="user-input" className="space-y-4 mt-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -654,7 +719,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
 
               {!editingStep?.isInputStep && (
                 <>
-                  {/* Add Substep Button 
+                  {/* Add Substep Button */}
                   <Button
                     variant="ghost"
                     onClick={addSubstep}
@@ -662,7 +727,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                   >
                     <Plus className="h-5 w-5" />
                     <span>Add new substep</span>
-                  </Button>*/}
+                  </Button>
 
                   {editingStep && editingStep.substeps && editingStep.substeps.length > 0 && (
                     <div className="space-y-2">

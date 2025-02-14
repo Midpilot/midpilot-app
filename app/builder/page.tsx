@@ -29,6 +29,7 @@ export default function Home() {
       setInitialSteps(data.steps);
       setShowBuilder(true);
     } catch (error) {
+      console.error("Error generating workflow:", error);
       toast({
         title: "Error",
         description: "Failed to generate workflow. Please try again.",
