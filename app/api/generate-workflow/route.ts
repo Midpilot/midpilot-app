@@ -32,7 +32,24 @@ export async function POST(req: Request) {
     })
 
     const response = completion.choices[0].message.content
-    const parsedResponse = JSON.parse(response || '{"steps": []}')
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(response || '{}')
+    } catch (e) {
+      console.error('Failed to parse OpenAI response:', response)
+      return NextResponse.json(
+        { error: 'Invalid response format from AI' },
+        { status: 500 }
+      )
+    }
+
+    if (!parsedResponse || !Array.isArray(parsedResponse.steps)) {
+      console.error('Invalid response structure:', parsedResponse)
+      return NextResponse.json(
+        { error: 'Invalid response structure from AI' },
+        { status: 500 }
+      )
+    }
 
     // Transform the steps into the format expected by the workflow builder
     const workflowSteps = parsedResponse.steps.map((step: any, index: number) => ({

@@ -1,11 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import dynamic from 'next/dynamic'
 import { Wand2, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
+
+// Dynamically import motion component with ssr disabled
+const MotionDiv = dynamic(
+  async () => {
+    const { motion } = await import("framer-motion")
+    return motion.div
+  },
+  { ssr: false }
+)
 
 interface InitialScreenProps {
   onTaskSubmit: (task: string) => void
@@ -24,11 +33,12 @@ export default function InitialScreen({ onTaskSubmit, onStartFromScratch }: Init
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-2xl"
+        key="initial-screen"
       >
         <Card className="p-8">
           <h1 className="text-3xl font-bold text-center mb-2">
@@ -78,7 +88,7 @@ export default function InitialScreen({ onTaskSubmit, onStartFromScratch }: Init
             </Button>
           </div>
         </Card>
-      </motion.div>
+      </MotionDiv>
     </div>
   )
 } 
