@@ -45,7 +45,7 @@ export default function InitialScreen({ onTaskSubmit, onStartFromScratch }: Init
             What do you want Midpilot to do for you?
           </h1>
           <p className="text-gray-500 text-center mb-8">
-            Describe your task in detail, and we'll break it down into actionable steps.
+            Describe your task in detail, and we&apos;ll break it down into actionable steps.
           </p>
           <Textarea
             placeholder="Example: Go to my Shopify order, copy the customer info and order a pickup from my store to their address on helthjem"

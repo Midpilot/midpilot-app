@@ -3,14 +3,13 @@
 import type React from "react"
 import { useState, useCallback } from "react"
 import { motion, Reorder } from "framer-motion"
-import { Plus, Trash2, Play, Wand2, AlertTriangle, Loader2, Check } from "lucide-react"
+import { Plus, Trash2, Play, Wand2, AlertTriangle, Loader2, CircleCheck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/app/components/ui/switch"
 import { debounce } from "lodash"
 import {
   Tooltip,
@@ -18,6 +17,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs"
 
 interface Substep {
   id: string
@@ -466,28 +471,102 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
           <CardContent className="space-y-6">
             <div className="space-y-4">
               {/* Step Type Selection */}
-              <div className="flex items-center justify-between border-b pb-4">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="input-step-switch" className="text-sm font-medium">
-                   User Input Required
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="input-step-switch"
-                    checked={editingStep?.isInputStep || false}
-                    onCheckedChange={(checked: boolean) => updateEditingStep(editingStep ? {
-                      ...editingStep,
-                      isInputStep: checked,
-                      inputType: checked ? 'text' : 'none'
-                    } : null)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-              </div>
-
-              {editingStep?.isInputStep ? (
-                <div className="space-y-6">
+              <Tabs 
+                defaultValue="ai-action" 
+                value={editingStep?.isInputStep ? "user-input" : "ai-action"}
+                onValueChange={(value: string) => updateEditingStep(editingStep ? {
+                  ...editingStep,
+                  isInputStep: value === "user-input",
+                  inputType: value === "user-input" ? 'text' : 'none'
+                } : null)}
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="ai-action">
+                    
+                    {editingStep?.isInputStep === false && <CircleCheck className="mr-1 h-4 w-4 text-primary" />}
+                    AI Step
+                  </TabsTrigger>
+                  <TabsTrigger value="user-input">
+                    {editingStep?.isInputStep === true && <CircleCheck className="mr-1 h-4 w-4 text-primary" />}
+                    User Input Step
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="ai-action" className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label className="text-base">Instructions for AI</Label>
+                    <div className="relative">
+                      <Textarea
+                        id="description"
+                        value={editingStep?.description || ""}
+                        onChange={(e) => updateEditingStep(editingStep ? { ...editingStep, description: e.target.value } : null)}
+                        placeholder="Tell AI what to do (e.g., 'Go to to the order page and collect the order number')..."
+                        className="min-h-[152px] text-base pr-10"
+                        autoFocus
+                      />
+                      {editingStep?.description && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                disabled={isFormatting}
+                                className="absolute bottom-2 right-2 h-8 w-8 hover:bg-secondary"
+                                onClick={async () => {
+                                  if (!editingStep?.description) return;
+                                  setIsFormatting(true);
+                                  try {
+                                    // Get previous steps up to the current one
+                                    const currentStepIndex = steps.findIndex(step => step.id === editingStep.id);
+                                    const previousSteps = steps.slice(0, currentStepIndex);
+                                    
+                                    const response = await fetch('/api/format-text', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ 
+                                        text: editingStep.description,
+                                        previousSteps: previousSteps.map(step => ({
+                                          title: step.title,
+                                          description: step.description,
+                                          isInputStep: step.isInputStep,
+                                          inputType: step.inputType,
+                                          inputPrompt: step.inputPrompt
+                                        }))
+                                      }),
+                                    });
+                                    const data = await response.json();
+                                    if (data.formattedText) {
+                                      updateEditingStep(editingStep ? {
+                                        ...editingStep,
+                                        description: data.formattedText
+                                      } : null);
+                                    }
+                                  } catch (error) {
+                                    console.error('Failed to format text:', error);
+                                  } finally {
+                                    setIsFormatting(false);
+                                  }
+                                }}
+                              >
+                                {isFormatting ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Wand2 className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Rewrite instructions with AI</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+                <TabsContent value="user-input" className="space-y-4 mt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => updateEditingStep(editingStep ? {
@@ -495,7 +574,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                         inputType: 'text'
                       } : null)}
                       className={`p-3 rounded-lg border-2 transition-all ${
-                        editingStep.inputType === 'text'
+                        editingStep?.inputType === 'text'
                           ? 'border-primary bg-primary/5'
                           : 'border-border hover:border-primary/50'
                       }`}
@@ -506,7 +585,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                           fill="none"
                           stroke="currentColor"
                           className={`w-6 h-6 ${
-                            editingStep.inputType === 'text'
+                            editingStep?.inputType === 'text'
                               ? 'text-primary'
                               : 'text-muted-foreground'
                           }`}
@@ -526,7 +605,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                         inputType: 'file'
                       } : null)}
                       className={`p-3 rounded-lg border-2 transition-all ${
-                        editingStep.inputType === 'file'
+                        editingStep?.inputType === 'file'
                           ? 'border-primary bg-primary/5'
                           : 'border-border hover:border-primary/50'
                       }`}
@@ -537,7 +616,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                           fill="none"
                           stroke="currentColor"
                           className={`w-6 h-6 ${
-                            editingStep.inputType === 'file'
+                            editingStep?.inputType === 'file'
                               ? 'text-primary'
                               : 'text-muted-foreground'
                           }`}
@@ -562,90 +641,16 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                         inputPrompt: e.target.value,
                         description: e.target.value // Keep description in sync with input prompt
                       } : null)}
-                      placeholder={editingStep.inputType === 'text' 
-                        ? "E.g., 'Enter your order URL'..."
-                        : "E.g., 'Upload your receipt'..."
+                      placeholder={editingStep?.inputType === 'text' 
+                        ? "Tell user what to do. (e.g., 'Enter your order URL')..."
+                        : "Tell user what to do. (e.g., 'Upload your receipt')..."
                       }
                       className="text-base"
                       autoFocus
                     />
                   </div>
-                </div>
-              ) : (
-                /* Description Input - Only show for AI tasks */
-                <div className="space-y-2">
-                  <Label className="text-base">Instructions for AI</Label>
-                  <div className="relative">
-                    <Textarea
-                      id="description"
-                      value={editingStep?.description || ""}
-                      onChange={(e) => updateEditingStep(editingStep ? { ...editingStep, description: e.target.value } : null)}
-                      placeholder="Go to to the order page and ..."
-                      className="min-h-[160px] text-base pr-10"
-                      autoFocus
-                    />
-                    {editingStep?.description && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="ghost"
-                              disabled={isFormatting}
-                              className="absolute bottom-2 right-2 h-8 w-8 hover:bg-secondary"
-                              onClick={async () => {
-                                if (!editingStep?.description) return;
-                                setIsFormatting(true);
-                                try {
-                                  // Get previous steps up to the current one
-                                  const currentStepIndex = steps.findIndex(step => step.id === editingStep.id);
-                                  const previousSteps = steps.slice(0, currentStepIndex);
-                                  
-                                  const response = await fetch('/api/format-text', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ 
-                                      text: editingStep.description,
-                                      previousSteps: previousSteps.map(step => ({
-                                        title: step.title,
-                                        description: step.description,
-                                        isInputStep: step.isInputStep,
-                                        inputType: step.inputType,
-                                        inputPrompt: step.inputPrompt
-                                      }))
-                                    }),
-                                  });
-                                  const data = await response.json();
-                                  if (data.formattedText) {
-                                    updateEditingStep(editingStep ? {
-                                      ...editingStep,
-                                      description: data.formattedText
-                                    } : null);
-                                  }
-                                } catch (error) {
-                                  console.error('Failed to format text:', error);
-                                } finally {
-                                  setIsFormatting(false);
-                                }
-                              }}
-                            >
-                              {isFormatting ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Wand2 className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Rewrite instructions with AI</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                </div>
-              )}
+                </TabsContent>
+              </Tabs>
 
               {!editingStep?.isInputStep && (
                 <>
@@ -735,7 +740,7 @@ export default function WorkflowBuilder({ initialSteps = [] }: WorkflowBuilderPr
                     </>
                   ) : (
                     <>
-                      <Check className="h-4 w-4" />
+                      <CircleCheck className="h-4 w-4" />
                       <span>Saved</span>
                     </>
                   )}
